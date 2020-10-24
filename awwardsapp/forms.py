@@ -10,7 +10,7 @@ class NewProfileForm(forms.ModelForm):
 
 class UploadForm(forms.ModelForm):
     class Meta:
-        model = Project
+        model = Post
         exclude =['user','profile']
 
 
