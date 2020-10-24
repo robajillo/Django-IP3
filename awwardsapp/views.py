@@ -35,3 +35,11 @@ def home(request):
         form = RatingsForm()
 
     return render(request,"home.html",{"post":post, "ratings":ratings,"form": form,"profile":profile})
+
+@login_required(login_url='/accounts/login/')
+def profile(request,profile_id):
+
+    profile = Profile.objects.get(pk = profile_id)
+    posts = Post.objects.filter(profile_id=profile).all()
+
+    return render(request,"profile.html",{"profile":profile,"posts":posts})
