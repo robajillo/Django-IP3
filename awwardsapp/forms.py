@@ -12,3 +12,9 @@ class UploadForm(forms.ModelForm):
     class Meta:
         model = Project
         exclude =['user','profile']
+
+
+class RatingsForm(forms.ModelForm):
+    class Meta:
+        model = Rating
+        fields = ['design', 'usability', 'content']
