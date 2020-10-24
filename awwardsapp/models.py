@@ -55,3 +55,34 @@ class Post(models.Model):
 
     def save_post(self):
         self.save()
+
+class Rating(models.Model):
+    rating = (
+        (1, '1'),
+        (2, '2'),
+        (3, '3'),
+        (4, '4'),
+        (5, '5'),
+        (6, '6'),
+        (7, '7'),
+        (8, '8'),
+        (9, '9'),
+        (10, '10'),
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rater")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='ratings', blank=True)
+    design = models.IntegerField(choices=rating, default=0, blank=True)
+    usability = models.IntegerField(choices=rating, blank=True)
+    content = models.IntegerField(choices=rating, blank=True)
+    comment = models.CharField(max_length=200,blank=True)
+
+    def save_rating(self):
+        self.save()
+
+    @classmethod
+    def get_ratings(cls, id):
+        ratings = Rating.objects.filter(post_id=id).all()
+        return ratings
+
+    def __str__(self):
+        return f'{self.post} Rating'
