@@ -6,19 +6,18 @@ from .forms import *
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import *
 from rest_framework import status
-from .permissions import IsAdminOrReadOnly
+
 
 
 def home(request):
-    post = Post.get_post()
-    ratings = Ratings.get_ratings()
+    post = Post.get_posts()
+    ratings = Rating.get_ratings(id)
     profile = Profile.get_profile()
 
     current_user = request.user
     if request.method == 'POST':
-        form = RatingForm(request.POST)
+        form = RatingsForm(request.POST)
         if form.is_valid():
             design = form.cleaned_data['design']
             usability = form.cleaned_data['usability']
@@ -33,6 +32,6 @@ def home(request):
         return redirect('home')
 
     else:
-        form = RatingForm()
+        form = RatingsForm()
 
-    return render(request,"home.html",{"posts":posts, "ratings":ratings,"form": form,"profile":profile})
+    return render(request,"home.html",{"post":post, "ratings":ratings,"form": form,"profile":profile})
