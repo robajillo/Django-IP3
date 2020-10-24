@@ -68,6 +68,11 @@ class Post(models.Model):
 
     def save_post(self):
         self.save()
+    
+    @classmethod
+    def find_post(cls,search_term):
+        post = Post.objects.filter(title__icontains=search_term)
+        return post
 
 class Rating(models.Model):
     rating = (
