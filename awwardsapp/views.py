@@ -79,7 +79,7 @@ def update_post(request):
 
 @login_required(login_url='/accounts/login/')
 def add_rating(request,pk):
-    project = get_object_or_404(Project, pk=pk)
+    post = get_object_or_404(Post, pk=pk)
     current_user = request.user
     if request.method == 'POST':
         form = RatingsForm(request.POST)
@@ -98,3 +98,17 @@ def add_rating(request,pk):
     else:
         form = RatingsForm()
         return render(request,'ratings.html',{"user":current_user,"form":form})
+
+@login_required(login_url='/accounts/login/')
+def search_results(request):
+
+    if 'title' in request.GET and request.GET["title"]:
+        search_term = request.GET.get("title")
+        searched_post = Post.find_post(search_term)
+        message = search_term
+
+        return render(request,'search.html',{"message":message,
+                                             "searched_post":searched_post})
+    else:
+        message = "You haven't searched for any project"
+        return render(request,'search.html',{"message":message})
