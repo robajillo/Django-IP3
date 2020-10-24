@@ -76,3 +76,25 @@ def update_post(request):
             else:
                 form = UploadForm()
             return render(request,'upload.html',{"user":current_user,"form":form})
+
+@login_required(login_url='/accounts/login/')
+def add_rating(request,pk):
+    project = get_object_or_404(Project, pk=pk)
+    current_user = request.user
+    if request.method == 'POST':
+        form = RatingsForm(request.POST)
+        if form.is_valid():
+            design = form.cleaned_data['design']
+            usability = form.cleaned_data['usability']
+            content = form.cleaned_data['content']
+            rating = form.save(commit=False)
+            rating.post = post
+            rating.user = current_user
+            rating.design = design
+            rating.usability = usability
+            rating.content = content
+            rating.save()
+            return redirect('home')
+    else:
+        form = RatingsForm()
+        return render(request,'ratings.html',{"user":current_user,"form":form})
