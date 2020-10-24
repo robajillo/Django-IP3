@@ -175,3 +175,29 @@ class PostList(APIView):
             return Response(serializers.data, status=status.HTTP_201_CREATED)
         return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class PostDescription(APIView):
+    permission_classes = (IsAdminOrReadOnly,)
+    def get_post(self, pk):
+        try:
+            return Post.objects.get(pk=pk)
+        except Post.DoesNotExist:
+            return Http404
+
+    def get(self, request, pk, format=None):
+        post= self.get_post(pk)
+        serializers = PostSerializer(post)
+        return Response(serializers.data)
+
+    def put(self, request, pk, format=None):
+        post = self.get_post(pk)
+        serializers = PostSerializer(post, request.data)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data)
+        else:
+            return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        post = self.get_post(pk)
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
