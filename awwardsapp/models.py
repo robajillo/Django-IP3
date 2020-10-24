@@ -28,7 +28,15 @@ class Profile(models.Model):
     @receiver(post_save, sender=User)
     def save_user_profile(sender, instance, **kwargs):
         instance.profile.save()
+    
+    def save_profile(self):
+        self.save()
 
+    @classmethod
+    def get_profile(cls):
+        profile = Profile.objects.all()
+
+        return profile
 
 class Post(models.Model):
     title = models.CharField(max_length=255)
@@ -48,6 +56,11 @@ class Post(models.Model):
     @classmethod
     def search_project(cls, title):
         return cls.objects.filter(title__icontains=title).all()
+
+    @classmethod
+    def get_posts(cls):
+        posts = Post.objects.all()
+        return posts
 
     @classmethod
     def all_posts(cls):
