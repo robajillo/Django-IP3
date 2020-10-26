@@ -73,7 +73,37 @@
                                       {%endfor%}
                                       
                                   </ul>
+                                  
                               </div>
+                          </div>
+                          <div class="review-section">
+                            {% for rating in ratings %}
+                            {% if post.id == rating.post.id %}
+                
+                            <p><strong>{{rating.user}}</strong> {{rating.comment}} [usability: {{rating.usability}}, content: {{rating.content}} , design: {{rating.design}}]</p>
+                            
+                            {% endif %}
+                
+                            {%endfor%}
+                
+                
+                            {{form.media}}
+                            <hr>
+                            <form action="{%url 'rating' pk=post.id%}" method="post" enctype="multipart/form-data" id="post">
+                              {%csrf_token%}
+                              <table>
+                                {{ form.as_table }}
+                              </table>
+                              <button type="submit">Vote</button>
+                
+                
+                            </form>
+                
+                            {% block scripts %}
+                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+                
+                            {% bootstrap_javascript %}
+                            {% endblock %}
                           </div>
                           {%for post in post%}
                           <div class="box-breadcrumb">
@@ -96,8 +126,7 @@
               </div>
           </div>
       </section>
-      </body>
-      </html>
+      
   </div>
 
   <div class="container">
