@@ -22,7 +22,8 @@ def home(request):
 
     current_user = request.user
     if request.method == 'POST':
-        form = RatingsForm(request.POST)
+        rate_form = RatingsForm(request.POST)
+        post_form = UploadForm(request.POST)
         if form.is_valid():
             design = form.cleaned_data['design']
             usability = form.cleaned_data['usability']
@@ -37,9 +38,14 @@ def home(request):
         return redirect('home')
 
     else:
-        form = RatingsForm()
+        rate_form = RatingsForm()
+        post_form = UploadForm()
+    params = {
+        'rate_form': rate_form,
+        'post_form': post_form,
+    }
 
-    return render(request,"index.html",{"post":post, "ratings":ratings,"form": form,"profile":profile})
+    return render(request,"index.html",params,{"post":post, "ratings":ratings,"form": form,"profile":profile})
 
 
 @login_required(login_url='login')
