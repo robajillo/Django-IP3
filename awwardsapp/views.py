@@ -16,15 +16,31 @@ from django.contrib.auth import login, authenticate
 
 
 def home(request):
-    try:
-        post = Post.objects.all()
-        ratings = Rating.objects.all()
-        profile = Profile.objects.all()
+    post = Post.objects.all()
+    ratings = Rating.objects.all()
+    profile = Profile.objects.all()
 
-    except DoesNotExist:
-        raise Http404()
+    current_user = request.user
+    if request.method == 'POST':
+        form = RatingsForm(request.POST)
+        if form.is_valid():
+            design = form.cleaned_data['design']
+            usability = form.cleaned_data['usability']
+            content = form.cleaned_data['content']
+            rating = form.save(commit=False)
+            rating.post = post
+            rating.user = current_user
+            rating.design = design
+            rating.usability = usability
+            rating.content = content
+            rating.save()
+        return redirect('home')
 
-    return render(request,"index.html",{"post":post, "ratings":ratings,"profile":profile})
+    else:
+        form = RatingsForm()
+
+    return render(request,"index.html",{"post":post, "ratings":ratings,"form": form,"profile":profile})
+
 
 @login_required(login_url='login')
 def profile(request, username):
@@ -68,7 +84,7 @@ def signup(request):
             raw_password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=raw_password)
             login(request, user)
-            return redirect('profile')
+            return redirect('home')
     else:
         form = SignupForm()
     return render(request, 'registration/signup.html', {'form': form})
