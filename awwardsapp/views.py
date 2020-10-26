@@ -128,7 +128,7 @@ def project(request, post):
 
 @login_required
 def update_post(request):
-    userX = request.user
+    user_a = request.user
     user = Profile.objects.get(user=request.user)
     
     if request.method == "POST":
@@ -138,7 +138,7 @@ def update_post(request):
         if form.is_valid():
             data = form.save(commit=False)
             data.profile = user
-            data.user = userX
+            data.user = user_a
             data.save()
             return redirect('/')
         else:
