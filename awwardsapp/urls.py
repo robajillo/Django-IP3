@@ -8,11 +8,13 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns = [
     path('', views.home,name='home'),
     path('signup/', views.signup, name='signup'),
+    path('account/', include('django.contrib.auth.urls')),
     path('profile/<username>/', views.profile, name='profile'),
     path('profile/<username>/settings', views.edit_profile, name='edit'),
     path('search/', views.search_results, name='search_results'),
     path('upload/', views.update_post, name='upload'),
     path('<username>/profile', views.user_profile, name='userprofile'),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('rating/<pk>',views.add_rating,name='rating'),
     path('api/profile/', views.ProfileList.as_view()),
     path('api/post/', views.PostList.as_view()),
