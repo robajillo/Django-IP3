@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/profile/profile-id/',views.ProfileDescription.as_view()),
     path('api/post/post-id/',views.PostDescription.as_view()),
     path('project/<post>', views.project, name='project'),
+    path('upload/', views.update_post, name='upload'),
 
    
 
