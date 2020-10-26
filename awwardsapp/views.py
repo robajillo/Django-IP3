@@ -140,8 +140,8 @@ def update_post(request):
             return render(request,'upload.html',{"user":current_user,"form":form})
 
 @login_required(login_url='/accounts/login/')
-def add_rating(request):
-    post = get_object_or_404(Post)
+def add_rating(request,pk):
+    post = get_object_or_404(Post,pk=pk)
     current_user = request.user
     if request.method == 'POST':
         form = RatingsForm(request.POST)
@@ -156,6 +156,7 @@ def add_rating(request):
             rating.usability = usability
             rating.content = content
             rating.save()
+            print(rating)
             return redirect('home')
     else:
         form = RatingsForm()

@@ -89,7 +89,7 @@
                 
                             {{form.media}}
                             <hr>
-                            <form action="{%url 'rating' post.id%}" method="post" enctype="multipart/form-data" id="post">
+                            <form action="{%url 'rating' pk=post.id%}" method="post" enctype="multipart/form-data" id="post">
                               {%csrf_token%}
                               <table>
                                 {{ form.as_table }}
