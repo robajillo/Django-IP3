@@ -40,12 +40,8 @@ def home(request):
     else:
         rate_form = RatingsForm()
         post_form = UploadForm()
-    params = {
-        'rate_form': rate_form,
-        'post_form': post_form,
-    }
-
-    return render(request,"index.html",params,{"post":post, "ratings":ratings,"profile":profile})
+   
+    return render(request,"index.html",{"post":post, "ratings":ratings,"profile":profile,"rate_form":rate_form,"post_form":post_form})
 
 
 @login_required(login_url='login')
