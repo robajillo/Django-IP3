@@ -45,7 +45,7 @@ def home(request):
         'post_form': post_form,
     }
 
-    return render(request,"index.html",params,{"post":post, "ratings":ratings,profile":profile})
+    return render(request,"index.html",params,{"post":post, "ratings":ratings,"profile":profile})
 
 
 @login_required(login_url='login')
