@@ -130,7 +130,7 @@ def update_post(request):
             if request.method == 'POST':
                 form = UploadForm(request.POST,request.FILES)
                 if form.is_valid():
-                    upload = form.save(commit=False)
+                    upload = form.save(commit=True)
                     upload.user = current_user
                     upload.profile = profile
                     upload.save()
@@ -140,8 +140,8 @@ def update_post(request):
             return render(request,'upload.html',{"user":current_user,"form":form})
 
 @login_required(login_url='/accounts/login/')
-def add_rating(request,pk):
-    post = get_object_or_404(Post, pk=pk)
+def add_rating(request):
+    post = get_object_or_404(Post)
     current_user = request.user
     if request.method == 'POST':
         form = RatingsForm(request.POST)
@@ -149,7 +149,7 @@ def add_rating(request,pk):
             design = form.cleaned_data['design']
             usability = form.cleaned_data['usability']
             content = form.cleaned_data['content']
-            rating = form.save(commit=False)
+            rating = form.save(commit=True)
             rating.post = post
             rating.user = current_user
             rating.design = design
