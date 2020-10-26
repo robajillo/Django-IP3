@@ -15,7 +15,7 @@ urlpatterns = [
     path('upload/', views.update_post, name='upload'),
     path('<username>/profile', views.user_profile, name='userprofile'),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('rating/<pk>',views.add_rating,name='rating'),
+    path('rating/',views.add_rating,name='rating'),
     path('api/profile/', views.ProfileList.as_view()),
     path('api/post/', views.PostList.as_view()),
     path('api-token-auth/', obtain_auth_token),
