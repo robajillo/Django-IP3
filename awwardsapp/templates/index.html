@@ -5,26 +5,17 @@
 {% block content %}
 
 <div class="container-fluid" style="margin-top:5%;">
-    <div class="container-fluid">
-        <!DOCTYPE html>
-        <html class="no-js" lang="en">
-        <body class="home" data-debug="0">
-  
+    
         <section id="content">
-            <div class="content-view">
+    
                 <div class="box-site-head js-single-element">
                      
-                    <div class="box-bg has-tablet">
-                        <a href="{{ post.project_link }}">
-                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAB2wAAAK8AQMAAAAZMt0LAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAANJJREFUeNrswYEAAAAAgKD9qRepAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABg9uBAAAAAAADI/7URVFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVWlPTgkAAAAABD0/7UzLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADAKNogABue9NggAAAABJRU5ErkJggg=="
-                                 width="1900" height="720" class="lazy"/>
-                        </a>
-                    </div>
+                   
                     {%for post in post%}
-                    <div class="box-content">
+                    
                         <a href="/" class="site-link" aria-label=""></a>
-                        <div class="inner vertical-center">
-                            <div class="box-info">
+                    
+                            
                               
                                 <div class="row mx-auto D-block">
                                     <h2 class="heading-large"><a href=""
@@ -40,7 +31,7 @@
                                 
                                 {%endfor%}
                                 
-                                <div class="box-notesite js-notes">
+                            
                                     <ul>
                                         {% for rating in ratings %}
                                         
@@ -90,20 +81,13 @@
                                     Site</a>
                             </div>
                             {%endfor%}
-                                </div>
-                            </div>
-                            
-                            
-                        </div>
                         
-                    </div>
-                </div>
-            </div>
+                            
+                        
         </section>
-        </body>
-        </html>
+       
     
-  
+</div>
     <div class="container">
         <div class="review-section">
             {% for rating in ratings %}
@@ -135,40 +119,18 @@
         </div>
         <h2 class="mt-4">Websites available</h2>
         
-        <div class="modal fade bd-example-modal-xl" id="ModalCenter" tabindex="-1" role="dialog"
-             aria-labelledby="exampleModalCenterTitle"
-             aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Upload a project</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form action="" method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {{ form|crispy }}
-                            <input type="submit" class="btn btn-sm btn-info" value="Save"/>
-                            <button type="button" class="btn btn-outline-danger btn-sm" data-dismiss="modal">Close
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
         
-        <div class="row">
+        
+        
             
           
   
-            <div class="templates display">
+            <div class="row">
                 {% for post in post %}
-                <div class="column">
+                <div class="col-md-4">
                     <div class="card">
                         <div class="view overlay">
-                            <img class="card-img-top" src="{{ post.image.url }}"
+                            <img class="card-img-top" src="{{ post.image.image.url }}"
                                  alt="{{photo.title}}">
                             <a href="{% url 'project' post.id %}">
                                 <div class="mask rgba-white-slight"></div>
@@ -192,9 +154,9 @@
             </div>
   
            
-        </div>
+    
     </div>
-  </div>
-  </div>
+
+  
   {% endblock %}
   
