@@ -149,7 +149,7 @@ def add_rating(request,pk):
             design = form.cleaned_data['design']
             usability = form.cleaned_data['usability']
             content = form.cleaned_data['content']
-            rating = form.save(commit=True)
+            rating = form.save(commit=False)
             rating.post = post
             rating.user = current_user
             rating.design = design
