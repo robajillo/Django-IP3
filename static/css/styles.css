@@ -23,6 +23,15 @@
     margin-right:10px;
     margin-left:70px;
 }
+.overlay{
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.container-fluids{
+    background-color: rgba(0,0,0,0.5);
+
+}
 .des,.des1,.des2,.des3{
     color:white;
     border-radius: 50%;
