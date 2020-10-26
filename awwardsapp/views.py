@@ -22,8 +22,9 @@ def home(request):
 
     current_user = request.user
     if request.method == 'POST':
-        form = UploadForm(request.POST)
-        if form.is_valid():
+        form = RatingsForm(request.POST)
+        post_form = UploadForm(request.POST)
+        if  form.is_valid():
             design = form.cleaned_data['design']
             usability = form.cleaned_data['usability']
             content = form.cleaned_data['content']
@@ -37,9 +38,12 @@ def home(request):
         return redirect('home')
 
     else:
-        form = UploadForm()
-   
-    return render(request,"index.html",{"post":post, "ratings":ratings,"profile":profile,"form":form})
+        form = RatingsForm()
+        post_form = UploadForm()
+    
+
+    return render(request,"index.html",{"post":post, "ratings":ratings,"form": form,"post_form": post_form,"profile":profile})
+
 
 
 @login_required(login_url='login')
@@ -121,23 +125,26 @@ def project(request, post):
     }
     return render(request, 'post.html', params)
 
-@login_required(login_url='/accounts/login/')
+
+@login_required
 def update_post(request):
-    current_user = request.user
-    profiles = Profile.get_profile()
-    for profile in profiles:
-        if profile.user.id == current_user.id:
-            if request.method == 'POST':
-                form = UploadForm(request.POST,request.FILES)
-                if form.is_valid():
-                    upload = form.save(commit=True)
-                    upload.user = current_user
-                    upload.profile = profile
-                    upload.save()
-                    return redirect('home')
-            else:
-                form = UploadForm()
-            return render(request,'upload.html',{"user":current_user,"form":form})
+    userX = request.user
+    user = Profile.objects.get(user=request.user)
+    
+    if request.method == "POST":
+        
+        form = UploadForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.profile = user
+            data.user = userX
+            data.save()
+            return redirect('/')
+        else:
+            return False
+    
+    return render(request, 'upload.html', {'form':UploadForm})
 
 @login_required(login_url='/accounts/login/')
 def add_rating(request,pk):

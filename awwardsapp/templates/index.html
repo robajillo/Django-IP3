@@ -76,36 +76,7 @@
                                   
                               </div>
                           </div>
-                          <div class="review-section">
-                            {% for rating in ratings %}
-                            {% if post.id == rating.post.id %}
-                
-                            <p><strong>{{rating.user}}</strong> {{rating.comment}} [usability: {{rating.usability}}, content: {{rating.content}} , design: {{rating.design}}]</p>
-                            
-                            {% endif %}
-                
-                            {%endfor%}
-                
-                
-                            {{form.media}}
-                            <hr>
-                            <form action="" method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                {{rating_form|crispy}}
-                              <table>
-                                {{ form.as_table }}
-                              </table>
-                              <button type="submit">Vote</button>
-                
-                
-                            </form>
-                
-                            {% block scripts %}
-                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-                
-                            {% bootstrap_javascript %}
-                            {% endblock %}
-                          </div>
+                          
                           {%for post in post%}
                           <div class="box-breadcrumb">
                               <div class="box-left">
@@ -129,8 +100,39 @@
       </section>
       
   </div>
+<br>
+<br>
 
   <div class="container">
+    <div class="review-section">
+        {% for rating in ratings %}
+        
+
+        <p><strong>{{rating.user}}</strong> {{rating.comment}} [usability: {{rating.usability}}, content: {{rating.content}} , design: {{rating.design}}]</p>
+        
+        
+
+        {%endfor%}
+
+
+        {{form.media}}
+        <hr>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ rate_form|crispy }}
+            
+            <button class="btn btn-sm btn-info">Rate</button>
+
+
+        </form>
+
+        {% block scripts %}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+        {% bootstrap_javascript %}
+        {% endblock %}
+    </div>
+
     
       <h2 class="mt-4">Websites available</h2>
       
