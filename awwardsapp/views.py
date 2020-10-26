@@ -17,6 +17,7 @@ from django.contrib.auth import login, authenticate
 
 def home(request):
     post = Post.objects.all()
+    post = post[::-1]
     ratings = Rating.objects.all()
     profile = Profile.objects.all()
 
