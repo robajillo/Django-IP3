@@ -7,16 +7,21 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
     path('', views.home,name='home'),
-    path('profile/', views.profile, name='profile'),
-    path('new/profile', views.add_profile, name='add_profile'),
+    path('signup/', views.signup, name='signup'),
+    path('profile/<username>/', views.profile, name='profile'),
+    path('profile/<username>/settings', views.edit_profile, name='edit'),
     path('search/', views.search_results, name='search_results'),
     path('upload/', views.update_post, name='upload'),
+    path('<username>/profile', views.user_profile, name='userprofile'),
     path('rating/<pk>',views.add_rating,name='rating'),
     path('api/profile/', views.ProfileList.as_view()),
     path('api/post/', views.PostList.as_view()),
-    path('api/profile/profile-id',views.ProfileDescription.as_view()),
-    path('api/post/post-id',views.PostDescription.as_view())
+    path('api-token-auth/', obtain_auth_token),
+    path('api/profile/profile-id/',views.ProfileDescription.as_view()),
+    path('api/post/post-id/',views.PostDescription.as_view()),
+    path('project/<post>', views.project, name='project'),
 
+   
 
 ]
 

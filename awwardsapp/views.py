@@ -6,62 +6,104 @@ from .forms import *
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializer import *
+from .serializer import ProfileSerializer, PostSerializer
 from rest_framework import status
 from .permissions import IsAdminOrReadOnly
+from django.contrib.auth import login, authenticate
 
 
 
 
 
 def home(request):
-    post = Post.get_posts()
-    ratings = Rating.get_ratings(id)
-    profile = Profile.get_profile()
+    try:
+        post = Post.objects.all()
+        ratings = Rating.objects.all()
+        profile = Profile.objects.all()
 
-    current_user = request.user
+    except DoesNotExist:
+        raise Http404()
+
+    return render(request,"index.html",{"post":post, "ratings":ratings,"profile":profile})
+
+@login_required(login_url='login')
+def profile(request, username):
+    return render(request, 'profile.html')
+
+
+def user_profile(request, username):
+    user_prof = get_object_or_404(User, username=username)
+    if request.user == user_prof:
+        return redirect('profile', username=request.user.username)
+    params = {
+        'user_prof': user_prof,
+    }
+    return render(request, 'user_profile.html', params)
+
+@login_required(login_url='login')
+def edit_profile(request, username):
+    user = User.objects.get(username=username)
+    if request.method == 'POST':
+        user_form = UpdateUserForm(request.POST, instance=request.user)
+        prof_form = UpdateUserProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        if user_form.is_valid() and prof_form.is_valid():
+            user_form.save()
+            prof_form.save()
+            return redirect('profile', user.username)
+    else:
+        user_form = UpdateUserForm(instance=request.user)
+        prof_form = UpdateUserProfileForm(instance=request.user.profile)
+    params = {
+        'user_form': user_form,
+        'prof_form': prof_form
+    }
+    return render(request, 'new_profile.html', params)
+
+def signup(request):
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('home')
+    else:
+        form = SignupForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
+@login_required(login_url='login')
+def project(request, post):
+    post = Post.objects.get(title=post)
+    ratings = Rating.objects.filter(user=request.user, post=post).first()
+    rating_status = None
+    if ratings is None:
+        rating_status = False
+    else:
+        rating_status = True
     if request.method == 'POST':
         form = RatingsForm(request.POST)
         if form.is_valid():
-            design = form.cleaned_data['design']
-            usability = form.cleaned_data['usability']
-            content = form.cleaned_data['content']
-            rating = form.save(commit=False)
-            rating.post = post
-            rating.user = current_user
-            rating.design = design
-            rating.usability = usability
-            rating.content = content
-            rating.save()
-        return redirect('home')
+            rate = form.save(commit=False)
+            rate.user = request.user
+            rate.post = post
+            rate.save()
+            post_ratings = Rating.objects.filter(post=post)
 
+        
+            
+            rate.save()
+            return HttpResponseRedirect(request.path_info)
     else:
         form = RatingsForm()
+    params = {
+        'post': post,
+        'rating_form': form,
+        'rating_status': rating_status
 
-    return render(request,"home.html",{"post":post, "ratings":ratings,"form": form,"profile":profile})
-
-@login_required(login_url='/accounts/login/')
-def profile(request,profile_id):
-
-    profile = Profile.objects.get(pk = profile_id)
-    posts = Post.objects.filter(profile_id=profile).all()
-
-    return render(request,"profile.html",{"profile":profile,"posts":posts})
-
-@login_required(login_url='/accounts/login/')
-def add_profile(request):
-    current_user = request.user
-    if request.method == 'POST':
-        form = NewProfileForm(request.POST, request.FILES)
-        if form.is_valid():
-            profile = form.save(commit=False)
-            profile.user = current_user
-            profile.save()
-        return redirect('home')
-
-    else:
-        form = NewProfileForm()
-    return render(request, 'new_profile.html', {"form": form})
+    }
+    return render(request, 'post.html', params)
 
 @login_required(login_url='/accounts/login/')
 def update_post(request):
@@ -118,15 +160,30 @@ def search_results(request):
         return render(request,'search.html',{"message":message})
 
 
-class ProfileList(APIView):
 
-    def get(self, request, format=None):
-        all_profiles = Profile.objects.all()
-        serializers = ProfileSerializer(all_profiles, many=True)
+class ProfileList(APIView):
+    def get(self,request,format=None):
+        all_profile = Profile.objects.all()
+        serializers = ProfileSerializer(all_profile, many=True)
+        return Response(serializers.data)
+    
+    def post(self, request, format=None):
+        serializers = ProfileSerializer(data=request.data)
+        permission_classes = (IsAdminOrReadOnly,)
+        if serializers.is_valid():
+            serializers.save()
+            return Response(serializers.data, status=status.HTTP_201_CREATED)
+        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PostList(APIView):
+    def get(self,request,format=None):
+        all_post = Post.objects.all()
+        serializers = PostSerializer(all_post, many=True)
         return Response(serializers.data)
 
     def post(self, request, format=None):
-        serializers = ProfileSerializer(data=request.data)
+        serializers = PostSerializer(data=request.data)
         permission_classes = (IsAdminOrReadOnly,)
         if serializers.is_valid():
             serializers.save()
@@ -145,7 +202,7 @@ class ProfileDescription(APIView):
         profile = self.get_profile(pk)
         serializers = ProfileSerializer(profile)
         return Response(serializers.data)
-
+    
     def put(self, request, pk, format=None):
         profile = self.get_profile(pk)
         serializers = ProfileSerializer(profile, request.data)
@@ -154,26 +211,11 @@ class ProfileDescription(APIView):
             return Response(serializers.data)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
     def delete(self, request, pk, format=None):
         profile = self.get_profile(pk)
         profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-class PostList(APIView):
-
-    def get(self, request, format=None):
-        all_posts = Post.objects.all()
-        serializers = PostSerializer(all_posts, many=True)
-        return Response(serializers.data)
-
-    def post(self, request, format=None):
-        serializers = PostSerializer(data=request.data)
-        permission_classes = (IsAdminOrReadOnly,)
-        if serializers.is_valid():
-            serializers.save()
-            return Response(serializers.data, status=status.HTTP_201_CREATED)
-        return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostDescription(APIView):
     permission_classes = (IsAdminOrReadOnly,)
@@ -182,12 +224,7 @@ class PostDescription(APIView):
             return Post.objects.get(pk=pk)
         except Post.DoesNotExist:
             return Http404
-
-    def get(self, request, pk, format=None):
-        post= self.get_post(pk)
-        serializers = PostSerializer(post)
-        return Response(serializers.data)
-
+    
     def put(self, request, pk, format=None):
         post = self.get_post(pk)
         serializers = PostSerializer(post, request.data)
@@ -196,6 +233,11 @@ class PostDescription(APIView):
             return Response(serializers.data)
         else:
             return Response(serializers.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def get(self, request, pk, format=None):
+        post = self.get_post(pk)
+        serializers = PostSerializer(PostSerializer)
+        return Response(serializers.data)
 
     def delete(self, request, pk, format=None):
         post = self.get_post(pk)
