@@ -31,7 +31,7 @@ cd Django-IP3 pip install -r requirements.txt
  ##### Setup Database  
   SetUp your database User,Password, Host then make migrate  
  ```bash 
-python manage.py makemigrations instagram
+python manage.py makemigrations awwardsapp
  ``` 
  Now Migrate  
  ```bash 
